@@ -18,6 +18,12 @@ export default defineConfig({
     setupFiles: "./src/helpers/setupTests.ts",
     coverage: {
       provider: "v8",
+      thresholds: {
+        branches: 100,
+        functions: 100,
+        lines: 100,
+        statements: 100,
+      },
       reporter: ["html", "text"],
       exclude: [
         "**/*.d.ts",

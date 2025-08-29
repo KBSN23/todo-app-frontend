@@ -1,0 +1,30 @@
+name: pnpm-setup
+description: Checkout repo, setup pnpm & Node with cache, and install dependencies
+inputs:
+  node-version:
+    description: Node.js version to use
+    required: false
+    default: '20'
+  pnpm-version:
+    description: pnpm version to use
+    required: false
+    default: '9'
+  install:
+    description: Whether to run pnpm install --frozen-lockfile
+    required: false
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+    - name: Install dependencies
+      if: ${{ inputs.install == 'true' }}
+      shell: bash
+      run: pnpm install --frozen-lockfile
