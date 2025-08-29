@@ -34,11 +34,14 @@ export function createPersistentStore<T extends object>(
 }
 
 export function createStore<T extends object>(
+  key: string,
   initializer: StateCreator<
     T,
     [["zustand/devtools", never], ["zustand/immer", never]],
     []
   >,
 ) {
-  return createSelectors(create<T>()(devtools(immer(initializer))));
+  return createSelectors(
+    create<T>()(devtools(immer(initializer), { store: key })),
+  );
 }
