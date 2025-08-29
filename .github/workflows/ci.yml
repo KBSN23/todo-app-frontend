@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches: ["**"]
   pull_request:
     branches: ["**"]
 
@@ -11,7 +9,6 @@ jobs:
     name: Prettier
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Setup
         uses: ./.github/actions/pnpm-setup
       - name: Prettier Check
@@ -21,7 +18,6 @@ jobs:
     name: ESLint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Setup
         uses: ./.github/actions/pnpm-setup
       - name: Lint
@@ -31,7 +27,6 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Setup
         uses: ./.github/actions/pnpm-setup
       - name: Test with coverage
