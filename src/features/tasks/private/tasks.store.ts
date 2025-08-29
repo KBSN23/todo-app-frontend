@@ -1,4 +1,4 @@
-import { createPersistentStore } from "../../helpers/createStore";
+import { createPersistentStore } from "../../../helpers/createStore";
 import type { Actions, State } from "./tasks.types";
 
 export const useTaskStore = createPersistentStore<State & { actions: Actions }>(

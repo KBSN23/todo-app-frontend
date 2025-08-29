@@ -1,5 +1,5 @@
+import { runStoreTests } from "../../../helpers/runStoreTests";
 import { useTaskStore } from "../private/tasks.store";
-import { runStoreTests } from "../../helpers/runStoreTests";
 
 describe("Tasks", () => {
   describe("Actions", () => {

@@ -1,4 +1,4 @@
-import { runStoreTests } from "../../helpers/runStoreTests";
+import { runStoreTests } from "../../../helpers/runStoreTests";
 import { useCategoriesStore } from "../private/categories.store";
 
 describe("Categories", () => {

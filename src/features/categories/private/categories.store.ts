@@ -1,4 +1,4 @@
-import { createStore } from "../../helpers/createStore";
+import { createStore } from "../../../helpers/createStore";
 import type { Actions, State } from "./categories.types";
 
 // example for non-persistent store
