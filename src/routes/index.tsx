@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCategoriesStore } from "../categories/private/categories.store";
+import { useCategoriesStore } from "../features/categories/private/categories.store";
 
 export const Route = createFileRoute("/")({
   component: Index,

@@ -1,5 +1,5 @@
-import { useCategoriesStore } from "../../categories/private/categories.store";
-import { renderRoute } from "../renderRoute";
+import { useCategoriesStore } from "../features/categories/private/categories.store";
+import { renderRoute } from "../helpers/renderRoute";
 
 describe("IndexPage", () => {
   it("should render welcome home", async () => {
