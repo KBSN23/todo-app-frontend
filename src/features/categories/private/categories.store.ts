@@ -1,5 +1,5 @@
 import { createStore } from "../../../helpers/createStore";
-import { fetchAction } from "./categories.api";
+import { getCategories } from "./actions";
 import type { Actions, State } from "./categories.types";
 
 // example for non-persistent store
@@ -7,6 +7,7 @@ export const useCategoriesStore = createStore<State & { actions: Actions }>(
   "categories-store",
   (set) => ({
     categories: [],
+    error: false,
     loading: false,
     actions: {
       add: (category) => {
@@ -30,7 +31,8 @@ export const useCategoriesStore = createStore<State & { actions: Actions }>(
           }
         });
       },
-      fetch: () => fetchAction()(set),
+
+      fetch: () => getCategories.action()(set),
     },
   }),
 );

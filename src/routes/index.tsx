@@ -9,6 +9,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const categories = useCategoriesStore.use.categories();
   const loading = useCategoriesStore.use.loading();
+  const error = useCategoriesStore.use.error();
   const { fetch } = useCategoriesStore.use.actions();
 
   useEffect(() => {
@@ -19,6 +20,7 @@ function Index() {
     <div className="p-2">
       <h3>Welcome Home!</h3>
       {loading && <p>Loading...</p>}
+      {error && <p>Error loading categories</p>}
       {categories.map((category) => (
         <div key={category.id}>
           <h4>{category.name}</h4>

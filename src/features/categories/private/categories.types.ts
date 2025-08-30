@@ -8,6 +8,7 @@ export type Category = {
 export type State = {
   categories: Category[];
   loading: boolean;
+  error: boolean;
 };
 
 export type Actions = {
