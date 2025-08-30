@@ -11,12 +11,21 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const rootElement = document.getElementById("root")!;
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>,
-  );
+// TODO: disable in prod
+async function enableMocking() {
+  const { worker } = await import("./mocks/browser");
+  return worker.start();
 }
+
+const rootElement = document.getElementById("root")!;
+
+enableMocking().then(() => {
+  if (!rootElement.innerHTML) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>,
+    );
+  }
+});
