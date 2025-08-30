@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import type { StoreApi, UseBoundStore } from "zustand";
 
 export type StoreCase<
@@ -30,7 +30,7 @@ type ActionArgsOfFor<S, K extends keyof ActionsOf<S>> = Parameters<
   ActionsOf<S>[K]
 >;
 
-type MinimalCase<S> = {
+export type MinimalCase<S> = {
   [K in keyof ActionsOf<S>]: {
     action: K;
     args?: ActionArgsOfFor<S, K>;
@@ -45,7 +45,7 @@ export function runStoreTests<S extends { actions: ActionsOf<S> }>(
   testCases: ReadonlyArray<MinimalCase<S>>,
 ) {
   testCases.forEach((tc) => {
-    it(`${String(tc.action)} - ${tc.description || "works"}`, () => {
+    it(`${String(tc.action)} - ${tc.description || "works"}`, async () => {
       (useStore as any).persist?.clearStorage?.();
 
       act(() => {
@@ -54,17 +54,17 @@ export function runStoreTests<S extends { actions: ActionsOf<S> }>(
 
       const { result } = renderHook(() => useStore());
 
-      if (tc.args !== undefined) {
-        act(() => {
-          (result.current.actions as any)[tc.action](
-            ...((tc.args as unknown[]) ?? []),
-          );
-        });
-      }
+      act(() => {
+        (result.current.actions as any)[tc.action](
+          ...((tc.args as unknown[]) ?? []),
+        );
+      });
 
-      expect(result.current).toEqual(
-        expect.objectContaining((tc.expected ?? {}) as any),
-      );
+      await waitFor(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { actions: _, ...currentWithoutActions } = result.current;
+        expect(currentWithoutActions).toEqual(tc.expected);
+      });
     });
   });
 }
