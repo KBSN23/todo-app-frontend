@@ -1,4 +1,3 @@
-import { useCategoriesStore } from "../features/categories/private/categories.store";
 import { getCategoriesMock } from "../features/categories/private/mocks";
 import { renderRoute } from "../helpers/renderRoute";
 

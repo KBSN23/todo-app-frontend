@@ -36,6 +36,8 @@ export default defineConfig({
         "src/main.tsx",
         "src/routes/__root.tsx",
         "src/helpers/runStoreTests.ts",
+        "mockServiceWorker.js",
+        "src/mocks/**",
       ],
     },
   },
