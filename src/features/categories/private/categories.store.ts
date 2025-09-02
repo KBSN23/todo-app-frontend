@@ -1,8 +1,8 @@
+import { Actions } from ".";
 import { createStore } from "../../../helpers/createStore";
-import { getCategories } from "./actions";
-import type { Actions, State } from "./categories.types";
+import { type Store } from "./categories.types";
 
-export const useCategoriesStore = createStore<State & { actions: Actions }>(
+export const useCategoriesStore = createStore<Store>(
   "categories-store",
   (set) => ({
     categories: [],
@@ -31,7 +31,10 @@ export const useCategoriesStore = createStore<State & { actions: Actions }>(
         });
       },
 
-      fetch: () => getCategories.action()(set),
+      fetch: () => Actions.getCategories.action()(set),
+
+      create: (args: Actions.createCategory.Args) =>
+        Actions.createCategory.action(args)(set),
     },
   }),
 );

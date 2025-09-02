@@ -1,4 +1,5 @@
 import z from "zod";
+import type { createCategory } from "./actions";
 
 export const CategorySchema = z.object({
   id: z.uuid(),
@@ -24,4 +25,7 @@ export type Actions = {
   remove: (id: Category["id"]) => void;
   update: (id: Category["id"], updatedCategory: Partial<Category>) => void;
   fetch: () => Promise<void>;
+  create: (args: createCategory.Args) => Promise<void>;
 };
+
+export type Store = State & { actions: Actions };

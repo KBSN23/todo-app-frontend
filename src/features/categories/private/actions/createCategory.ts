@@ -1,17 +1,16 @@
 import { createAsyncAction } from "../../../../helpers/createAsyncAction";
-import type { Store } from "../categories.types";
+import axios from "axios";
+import type { Category, State, Store } from "../categories.types";
 
 export const URL = "/api/category";
-export const METHOD = "GET";
-export type Args = void;
+
+export const METHOD = "post";
+export type Args = Omit<Category, "id" | "createdAt" | "archived" | "favorite">;
+export type Response = null;
 
 export const action = createAsyncAction<Store, Args>(
-  async ({ set }) => {
-    const response = await fetch(URL, { method: METHOD });
-    const data = await response.json();
-    set((state) => {
-      state.categories = data;
-    });
+  async ({ args }) => {
+    await axios[METHOD]<Response>(URL, args);
   },
   {
     onStart: (set) => {
@@ -26,7 +25,7 @@ export const action = createAsyncAction<Store, Args>(
     },
     onFinally: (set) => {
       set((state) => {
-        state.loading = false;
+        state.actions.fetch();
       });
     },
   },

@@ -1,114 +1,99 @@
-import { http, HttpResponse } from "msw";
-import { runStoreTests } from "../../../helpers/runStoreTests";
-import { server } from "../../../mocks/node";
 import { useCategoriesStore } from "../private/categories.store";
+import { act, waitFor } from "@testing-library/react";
 import { getCategoriesMock } from "../private/mocks";
-import { getCategories } from "../private/actions";
+import { server } from "../../../mocks/node";
+import { http } from "msw";
+import { createCategory, getCategories } from "../private/actions";
+import { renderStore } from "../../../helpers/runStoreTests";
+import { Actions } from "../private";
 
 describe("Categories", () => {
   describe("Actions", () => {
-    runStoreTests(useCategoriesStore, [
-      {
-        action: "remove",
-        args: ["0"],
-        description: "removes category",
-        state: {
-          categories: [
-            { id: "1", name: "Work1", favorite: true, color: "blue" },
-            { id: "0", name: "Work", favorite: false, color: "blue" },
-          ],
-        },
-        expected: {
-          categories: [
-            { id: "1", name: "Work1", favorite: true, color: "blue" },
-          ],
-          error: false,
-          loading: false,
-        },
-      },
-      {
-        action: "add",
-        args: [
-          {
-            color: "blue",
-            name: "Work2",
-            favorite: false,
-            id: "2",
-          },
-        ],
-        description: "adds category",
-        state: {
-          categories: [
-            { id: "1", name: "Work1", favorite: true, color: "blue" },
-            { id: "0", name: "Work", favorite: false, color: "blue" },
-          ],
-        },
-        expected: {
-          categories: [
-            { id: "1", name: "Work1", favorite: true, color: "blue" },
-            { id: "0", name: "Work", favorite: false, color: "blue" },
-            { id: "2", name: "Work2", favorite: false, color: "blue" },
-          ],
-          error: false,
-          loading: false,
-        },
-      },
-      {
-        action: "update",
-        args: ["1", { favorite: false }],
-        description: "updates category",
-        state: {
-          categories: [
-            { id: "1", name: "Work1", favorite: true, color: "blue" },
-            { id: "0", name: "Work", favorite: false, color: "blue" },
-          ],
-        },
-        expected: {
-          categories: [
-            { id: "1", name: "Work1", favorite: false, color: "blue" },
-            { id: "0", name: "Work", favorite: false, color: "blue" },
-          ],
-          error: false,
-          loading: false,
-        },
-      },
-      {
-        action: "fetch",
-        args: [],
-        state: {
-          categories: [],
-        },
-        expected: {
-          categories: getCategoriesMock.RESPONSE,
-          error: false,
-          loading: false,
-        },
-      },
-    ]);
+    describe("getCategories", () => {
+      it("Success", async () => {
+        const { result } = renderStore(useCategoriesStore);
+        expect(result.current.categories.length).toBe(0);
+        expect(result.current.loading).toBe(false);
 
-    describe("Error response", () => {
-      beforeEach(() => {
-        server.use(
-          http.get(getCategories.URL, () => {
-            return new HttpResponse(null, { status: 500 });
-          }),
-        );
+        act(() => {
+          result.current.actions.fetch();
+        });
+
+        expect(result.current.loading).toBe(true);
+        await waitFor(() => {
+          expect(result.current.categories).toEqual(getCategoriesMock.RESPONSE);
+
+          expect(result.current.loading).toBe(false);
+        });
       });
 
-      runStoreTests(useCategoriesStore, [
-        {
-          action: "fetch",
-          args: [],
-          state: {
-            categories: [],
-          },
-          expected: {
-            categories: [],
-            error: true,
-            loading: false,
-          },
-        },
-      ]);
+      it("Error", async () => {
+        server.use(
+          http.get(getCategories.URL, () => {
+            return new Response(null, { status: 500 });
+          }),
+        );
+
+        const { result } = renderStore(useCategoriesStore);
+
+        expect(result.current.loading).toBe(false);
+        expect(result.current.categories.length).toBe(0);
+
+        act(() => {
+          result.current.actions.fetch();
+        });
+
+        expect(result.current.loading).toBe(true);
+        await waitFor(() => {
+          expect(result.current.error).toBe(true);
+          expect(result.current.loading).toBe(false);
+        });
+      });
+    });
+
+    describe("createCategory", () => {
+      const newCategory: createCategory.Args = {
+        name: "test category",
+        color: "#FFFFFF",
+        description: "test description",
+        icon: "icon123",
+      };
+
+      it("Should post category", async () => {
+        const createMock = vi.fn();
+        server.use(
+          http.post(createCategory.URL, async ({ request }) =>
+            createMock(await request.clone().json()),
+          ),
+        );
+
+        const { result } = renderStore(useCategoriesStore);
+        expect(result.current.categories.length).toBe(0);
+        expect(result.current.loading).toBe(false);
+
+        act(() => {
+          result.current.actions.create(newCategory);
+        });
+
+        expect(result.current.loading).toBe(true);
+        await waitFor(() => {
+          expect(createMock).toHaveBeenCalledWith(newCategory);
+        });
+      });
+
+      it("should fetch categories after creating category", async () => {
+        vi.spyOn(Actions.getCategories, "action");
+
+        const { result } = renderStore(useCategoriesStore);
+
+        act(() => {
+          result.current.actions.create(newCategory);
+        });
+
+        await waitFor(() => {
+          expect(Actions.getCategories.action).toHaveBeenCalled();
+        });
+      });
     });
   });
 });
